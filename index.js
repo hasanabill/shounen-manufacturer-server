@@ -70,6 +70,12 @@ async function run() {
             res.send(result)
         })
 
+        // getting all orders
+        app.get('/orders', verifyJWT, async (req, res) => {
+            const result = await cartCollection.find().toArray();
+            res.send(result)
+        })
+
         // getting cart item of user
         app.get('/cart/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
@@ -89,6 +95,25 @@ async function run() {
             }
             const result = await toolsCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
+        })
+
+        // getting all users
+        app.get('/users', verifyJWT, async (req, res) => {
+            const result = await userCollection.find().toArray();
+            res.send(result);
+        })
+
+        // giving admin role
+        app.put('/user/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email }
+            const updatedDoc = {
+                $set: {
+                    role: 'admin'
+                }
+            }
+            const result = await userCollection.updateOne(filter, updatedDoc)
+            res.send(result);
         })
 
     }
