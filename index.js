@@ -35,6 +35,7 @@ async function run() {
         const cartCollection = client.db('shounen-manu').collection('cart')
         const userCollection = client.db('shounen-manu').collection('users')
 
+        // sending user to database
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
             const user = req.body;
@@ -48,11 +49,13 @@ async function run() {
             res.send({ result, token });
         })
 
+        // getting all the tools
         app.get('/tools', async (req, res) => {
             const result = await toolsCollection.find().toArray()
             res.send(result)
         })
 
+        // getting desired tool
         app.get('/tool/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
@@ -60,16 +63,31 @@ async function run() {
             res.send(result);
         })
 
+        // adding product to cart
         app.post('/cart', async (req, res) => {
             const cartItem = req.body;
             const result = await cartCollection.insertOne(cartItem)
             res.send(result)
         })
 
+        // getting cart item of user
         app.get('/cart/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const query = { email }
-            const result = await cartCollection.find(query).toArray()
+            const result = await cartCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        // updating quantity value after adding to cart
+        app.put('/quantity/:id', async (req, res) => {
+            const id = req.params.id;
+            const available = req.body.available;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true }
+            const updatedDoc = {
+                $set: { available }
+            }
+            const result = await toolsCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
         })
 
