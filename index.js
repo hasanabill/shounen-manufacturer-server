@@ -122,6 +122,20 @@ async function run() {
             res.send({ clientSecret: paymentIntent.client_secret });
         })
 
+        app.patch('/cart/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const filter = { _id: ObjectId(id) }
+            const updatedDoc = {
+                $set: {
+                    isPaid: true,
+                    traxId: payment.traxId
+                }
+            }
+            const updateCart = await cartCollection.updateOne(filter, updatedDoc)
+            res.send(updatedDoc)
+        })
+
         //deleting cart item
         app.delete('/cart/:id', async (req, res) => {
             const id = req.params.id;
