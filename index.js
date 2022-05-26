@@ -63,6 +63,14 @@ async function run() {
             res.send(result);
         })
 
+        // deleting a tool
+        app.delete('/tool/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await toolsCollection.deleteOne(query)
+            res.send(result);
+        })
+
         // adding product to cart
         app.post('/cart', async (req, res) => {
             const cartItem = req.body;
@@ -81,6 +89,14 @@ async function run() {
             const email = req.params.email;
             const query = { email }
             const result = await cartCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        //deleting cart item
+        app.delete('/cart/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await cartCollection.deleteOne(query)
             res.send(result);
         })
 
