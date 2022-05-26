@@ -34,6 +34,7 @@ async function run() {
         const toolsCollection = client.db('shounen-manu').collection('tools')
         const cartCollection = client.db('shounen-manu').collection('cart')
         const userCollection = client.db('shounen-manu').collection('users')
+        const reviewCollection = client.db('shounen-manu').collection('reviews')
 
         // sending user to database
         app.put('/user/:email', async (req, res) => {
@@ -111,6 +112,19 @@ async function run() {
             }
             const result = await toolsCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
+        })
+
+        // Adding review
+        app.post('/review', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review)
+            res.send(result)
+        })
+
+        // Getting all review
+        app.get('/review', async (req, res) => {
+            const review = await reviewCollection.find().toArray();
+            res.send(review);
         })
 
         // getting all users
