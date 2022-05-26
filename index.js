@@ -56,6 +56,13 @@ async function run() {
             res.send(result)
         })
 
+        // 
+        app.post('/tool', verifyJWT, async (req, res) => {
+            const newTool = req.body;
+            const result = await toolsCollection.insertOne(newTool)
+            res.send(result)
+        })
+
         // getting desired tool
         app.get('/tool/:id', async (req, res) => {
             const id = req.params.id;
