@@ -51,6 +51,19 @@ async function run() {
             res.send({ result, token });
         })
 
+        // updating profile
+        app.patch('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email }
+            const options = { upsert: true }
+            const updatedDoc = {
+                $set: user
+            }
+            const result = await userCollection.updateOne(filter, updatedDoc, options)
+            res.send(result);
+        })
+
         // getting all the tools
         app.get('/tools', async (req, res) => {
             const result = await toolsCollection.find().toArray()
@@ -173,6 +186,14 @@ async function run() {
         // getting all users
         app.get('/users', verifyJWT, async (req, res) => {
             const result = await userCollection.find().toArray();
+            res.send(result);
+        })
+
+        // getting specific user
+        app.get('/user/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const result = await userCollection.findOne(query);
             res.send(result);
         })
 
