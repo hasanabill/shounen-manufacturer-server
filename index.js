@@ -4,12 +4,13 @@ const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors());
 app.use(express.json())
 
 
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.8pzbh.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -98,6 +99,27 @@ async function run() {
             const query = { email }
             const result = await cartCollection.find(query).toArray();
             res.send(result);
+        })
+
+        // Getting specific cart item for payment
+        app.get('/carts/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await cartCollection.findOne(query);
+            res.send(result)
+        })
+
+        // Payment
+        app.post('/payment-intent', verifyJWT, async (req, res) => {
+            const cartItem = req.body
+            const price = cartItem.price;
+            const amount = price * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount,
+                currency: 'usd',
+                payment_method_types: ['card']
+            });
+            res.send({ clientSecret: paymentIntent.client_secret });
         })
 
         //deleting cart item
