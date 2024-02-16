@@ -8,16 +8,18 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const dbConnect = require('./utils/dbConnect');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const toolsRoute = require('./routes/v1/tools.route');
+const viewCount = require('./middleware/viewCount');
 
 
 app.use(cors());
 app.use(express.json())
 
-
+app.use(viewCount);
 
 dbConnect();
 
 app.use('/api/v1/tools', toolsRoute);
+app.use('/api/v1/users', require('./routes/v1/user.route'));
 
 
 function verifyJWT(req, res, next) {

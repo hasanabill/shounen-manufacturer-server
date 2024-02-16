@@ -1,5 +1,5 @@
 module.exports.getAllTools = (req, res) => {
-    const { } = req;
+    res.send("Tools found");
 }
 
 
