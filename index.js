@@ -14,12 +14,12 @@ const viewCount = require('./middleware/viewCount');
 app.use(cors());
 app.use(express.json())
 
-app.use(viewCount);
+// app.use(viewCount);
 
 dbConnect();
 
 app.use('/api/v1/tools', toolsRoute);
-app.use('/api/v1/users', require('./routes/v1/user.route'));
+app.use('/api/v1/user', require('./routes/v1/user.route'));
 
 
 function verifyJWT(req, res, next) {
