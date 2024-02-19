@@ -13,6 +13,7 @@ const viewCount = require('./middleware/viewCount');
 
 app.use(cors());
 app.use(express.json())
+app.use(express.static('public'))
 
 // app.use(viewCount);
 
@@ -20,6 +21,8 @@ dbConnect();
 
 app.use('/api/v1/tools', toolsRoute);
 app.use('/api/v1/user', require('./routes/v1/user.route'));
+app.use('/api/v1/review', require('./routes/v1/review.route'));
+app.use('/api/v1/cart', require('./routes/v1/cart.route'));
 
 
 function verifyJWT(req, res, next) {
@@ -254,6 +257,7 @@ run().catch(console.dir)
 
 app.get('/', (req, res) => {
     res.send('Server in up')
+    // res.sendFile(__dirname + '/public/test.html')
 })
 
 app.all('*', (req, res) => {
